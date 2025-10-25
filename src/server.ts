@@ -2,6 +2,7 @@ import express from 'express'
 import dotenv from 'dotenv'
 import https from 'https'
 import fs from 'fs' //modul za rad s fileovima
+import path from 'path'
 //import { getComments } from './db.ts';
 
 dotenv.config()
@@ -13,6 +14,14 @@ const app = express();
   res.json(comments);
 });
  */
+
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs"); 
+app.use(express.static(path.join(__dirname, 'public'))); 
+
+app.get('/', (req, res) => {
+  res.render('index');
+});
 
 const externalUrl = process.env.RENDER_EXTERNAL_URL; //uzima javni URL sa rendera, ako postoji
 const port = externalUrl && process.env.PORT ? parseInt(process.env.PORT) : 4080;
