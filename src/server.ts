@@ -2,6 +2,8 @@ import express from 'express'
 import dotenv from 'dotenv'
 import https from 'https'
 import fs from 'fs' //modul za rad s fileovima
+import path from "path";
+import { fileURLToPath } from "url";
 //import { getComments } from './db.ts';
 
 dotenv.config()
@@ -14,9 +16,12 @@ const app = express();
 });
  */
 
-app.set("view engine", "ejs"); 
-app.set("views", "./views");
-app.use(express.static('./public')); 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+app.use(express.static(path.join(__dirname, 'public'))); 
 
 app.get('/', (req, res) => {
   res.render('index');
@@ -29,7 +34,7 @@ const config = {
   baseURL: externalUrl || `https://localhost:${port}`,
 };
 
-if (externalUrl) {
+if (false) { //externalUrl
   const hostname = '0.0.0.0';
   app.listen(port, hostname, () => {
     console.log(`Server locally running at http://${hostname}:${port}/ and from
@@ -37,11 +42,14 @@ if (externalUrl) {
   });
 }
 else {
-  https.createServer({
+  /* https.createServer({
     key: fs.readFileSync('server.key'),
     cert: fs.readFileSync('server.cert')
   }, app)
   .listen(port, function () {
     console.log(`Server running at https://localhost:${port}/`);
+  }); */
+  app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}/`);
   });
 }
