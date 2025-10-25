@@ -2,7 +2,6 @@ import express from 'express'
 import dotenv from 'dotenv'
 import https from 'https'
 import fs from 'fs' //modul za rad s fileovima
-import path from 'path'
 //import { getComments } from './db.ts';
 
 dotenv.config()
