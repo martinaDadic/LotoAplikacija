@@ -8,15 +8,47 @@
 
 <body>
     <h1>početna stranica</h1>
-    <% if (user) { %>
-        <p>Korisnik: <%= user.name %></p>
-        <form action="/logout" method="get">
-        <button type="submit">Odjava</button>
-    </form>
-    <% } else { %>
-        <form action="/login" method="get">
-        <button type="submit">Prijava</button>
-    </form>
-    <% } %>
+    <header>
+        <% if (user) { %>
+            <p>Korisnik: <%= user.name %></p>
+            <form action="/logout" method="get">
+            <button type="submit">Odjava</button>
+        </form>
+        <% } else { %>
+            <form action="/login" method="get">
+            <button type="submit">Prijava</button>
+        </form>
+        <% } %>
+    </header>
+    <div>
+        <form name="unosPodataka" action="/input" onsubmit="return validateForm()" method="post">
+            <label for="iskaznica">Broj osobne iskaznice ili putovnice:</label><br>
+            <input type="text" id="iskaznica" name="iskaznica" pattern="[0-9]+" maxlength="20" required><br>
+            <label for="brojevi">6 do 10 brojeva u rasponu od 1 do 45, međusobno odvojeni zarezima: </label><br>
+            <input type="text" id="brojevi" name="brojevi" required>
+            <button type="submit">Pošalji</button>
+        </form>
+    </div>
 </body>
+<script>
+    function validateForm() {
+        let brojevi = document.forms["unosPodataka"]["brojevi"].value.split(",").map(broj => Number(broj.trim()))
+        let jedinstveniBrojevi = new Set(brojevi)
+        if (brojevi.length <6 || brojevi.length>10){
+            alert("Dozvoljen je unos 6 do 10 brojeva!")
+            return false
+        }
+        for (let broj of brojevi){
+            if (isNaN(broj)||broj <1 || broj>45){
+                alert("Uneseni podaci moraju biti brojevi od 1 do 45 razdvojeni zarezima!")
+                return false
+            }
+        }
+        if (jedinstveniBrojevi.size!=brojevi.length){
+            alert("Brojevi se ne smiju ponavljati!")
+            return false
+        }
+        return true
+    }
+</script>
 </html>

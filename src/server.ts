@@ -5,6 +5,8 @@ import fs from 'fs' //modul za rad s fileovima
 import path from "path";
 import { fileURLToPath } from "url";
 import { auth } from 'express-openid-connect';
+import QRCode from 'qrcode';
+import { unosPodataka } from './db.js';
 //import { getComments } from './db.ts';
 
 dotenv.config()
@@ -34,6 +36,8 @@ const config = {
 
 // auth router attaches /login, /logout, and /callback routes to the baseURL
 app.use(auth(config));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -41,6 +45,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
   res.render('index', {user: req.oidc.user});
+});
+
+app.post('/input', async (req, res) => {
+  const { iskaznica, brojevi } = req.body;
+  let lotoBrojevi = brojevi.split(",").map(broj => Number(broj.trim()))
+  const id = await unosPodataka(iskaznica, lotoBrojevi)
+  const url =`${config.baseURL}/${id}`;
+  const qrCodeImage = await QRCode.toDataURL(url);
+  res.send(`<img src="${qrCodeImage}">`);
 });
 
 if (externalUrl) { //externalUrl

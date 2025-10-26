@@ -10,9 +10,16 @@ const pool = new Pool({
     database: process.env.DB_NAME,
     password: process.env.DB_PASSWORD,
     port: 5432,
-    ssl : true //koristi sigurni kanal
+    ssl : true //koristi sigurni kanal      promjeni na true za render
 })
 
+export async function unosPodataka(iskaznica, lotoBrojevi) {
+    await pool.query(
+        'INSERT INTO loto_rezultati (broj_iskaznice, loto_brojevi) VALUES ($1, $2)', [iskaznica, lotoBrojevi]
+    )
+    const result = await pool.query('SELECT id FROM loto_rezultati WHERE broj_iskaznice = $1 ORDER BY vrijeme DESC LIMIT 1', [iskaznica])
+    return result.rows[0].id;
+}
 /* export async function getComments() {
     const comments : string[] = [];
     const results = await pool.query('SELECT id, comment from comments');
