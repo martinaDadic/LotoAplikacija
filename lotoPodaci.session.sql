@@ -1,1 +1,1 @@
-SELECT * from loto_rezultati
+SELECT * FROM loto_rezultati

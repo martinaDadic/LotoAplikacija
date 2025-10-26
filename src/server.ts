@@ -49,8 +49,8 @@ app.get('/', (req, res) => {
 
 app.post('/input', async (req, res) => {
   const { iskaznica, brojevi } = req.body;
-  let lotoBrojevi = brojevi.split(",").map(broj => Number(broj.trim()))
-  const id = await unosPodataka(iskaznica, lotoBrojevi)
+  //let lotoBrojevi = brojevi.split(",").map(broj => Number(broj.trim()))
+  const id = await unosPodataka(iskaznica, brojevi)
   const url =`${config.baseURL}/${id}`;
   const qrCodeImage = await QRCode.toDataURL(url);
   res.send(`<img src="${qrCodeImage}">`);

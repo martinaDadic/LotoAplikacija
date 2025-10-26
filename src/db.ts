@@ -5,17 +5,18 @@ import dotenv from 'dotenv' //omogućuje čitanje podataka iz .env filea pomoću
 dotenv.config() //čita env file i dodaje te vrijednosti u process.env
 
 const pool = new Pool({
-    user: process.env.DB_USER,
+    /* user: process.env.DB_USER,
     host: process.env.DB_HOST,
     database: process.env.DB_NAME,
     password: process.env.DB_PASSWORD,
-    port: 5432,
+    port: 5432, */
+    connectionString: process.env.DATABASE_URL,
     ssl : { rejectUnauthorized: false } //koristi sigurni kanal
 })
 
-export async function unosPodataka(iskaznica, lotoBrojevi) {
+export async function unosPodataka(iskaznica, brojevi) {
     await pool.query(
-        'INSERT INTO loto_rezultati (broj_iskaznice, loto_brojevi) VALUES ($1, $2)', [iskaznica, lotoBrojevi]
+        'INSERT INTO loto_rezultati (broj_iskaznice, loto_brojevi) VALUES ($1, $2)', [iskaznica, brojevi]
     )
     const result = await pool.query('SELECT id FROM loto_rezultati WHERE broj_iskaznice = $1 ORDER BY vrijeme DESC LIMIT 1', [iskaznica])
     return result.rows[0].id;
