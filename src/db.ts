@@ -10,7 +10,7 @@ const pool = new Pool({
     database: process.env.DB_NAME,
     password: process.env.DB_PASSWORD,
     port: 5432,
-    ssl : true //koristi sigurni kanal      promjeni na true za render
+    ssl : { rejectUnauthorized: false } //koristi sigurni kanal
 })
 
 export async function unosPodataka(iskaznica, lotoBrojevi) {
