@@ -20,15 +20,21 @@
         </form>
         <% } %>
     </header>
-    <div>
-        <form name="unosPodataka" action="/input" onsubmit="return validateForm()" method="post">
-            <label for="iskaznica">Broj osobne iskaznice ili putovnice:</label><br>
-            <input type="text" id="iskaznica" name="iskaznica" pattern="[0-9]+" maxlength="20" required><br>
-            <label for="brojevi">6 do 10 brojeva u rasponu od 1 do 45, međusobno odvojeni zarezima: </label><br>
-            <input type="text" id="brojevi" name="brojevi" required>
-            <button type="submit">Pošalji</button>
-        </form>
-    </div>
+    <% if (!brojevi && user) { %>
+        <div>
+            <form name="unosPodataka" action="/input" onsubmit="return validateForm()" method="post">
+                <label for="iskaznica">Broj osobne iskaznice ili putovnice:</label><br>
+                <input type="text" id="iskaznica" name="iskaznica" pattern="[0-9]+" maxlength="20" required><br>
+                <label for="brojevi">6 do 10 brojeva u rasponu od 1 do 45, međusobno odvojeni zarezima: </label><br>
+                <input type="text" id="brojevi" name="brojevi" required>
+                <button type="submit">Pošalji</button>
+            </form>
+        </div>
+    <% } else { %>
+        <div>
+            <p>upisani brojevi: <%= brojevi %></p>
+        </div>
+    <% } %>
 </body>
 <script>
     function validateForm() {

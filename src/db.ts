@@ -21,6 +21,10 @@ export async function unosPodataka(iskaznica, brojevi) {
     const result = await pool.query('SELECT id FROM loto_rezultati WHERE broj_iskaznice = $1 ORDER BY vrijeme DESC LIMIT 1', [iskaznica])
     return result.rows[0].id;
 }
+export async function pronadiBrojeve(id) {
+    const result = await pool.query('SELECT loto_brojevi FROM loto_rezultati WHERE id = $1', [id])
+    return result.rows[0].loto_brojevi;
+}
 /* export async function getComments() {
     const comments : string[] = [];
     const results = await pool.query('SELECT id, comment from comments');

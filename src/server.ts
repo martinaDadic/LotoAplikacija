@@ -6,7 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { auth } from 'express-openid-connect';
 import QRCode from 'qrcode';
-import { unosPodataka } from './db.js';
+import { unosPodataka, pronadiBrojeve } from './db.js';
 //import { getComments } from './db.ts';
 
 dotenv.config()
@@ -29,7 +29,7 @@ const config = {
   authRequired: false,
   auth0Logout: true,
   secret: process.env.SECRET,
-  baseURL: externalUrl || `http://localhost:${port}`, //externalUrl || `http://localhost:${port}`
+  baseURL: externalUrl || `http://localhost:${port}`,
   clientID: process.env.CLIENT_ID,
   issuerBaseURL: 'https://dev-i25ptmtk6aiqoev1.us.auth0.com'
 };
@@ -43,20 +43,44 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, 'public'))); 
 
+let aktivnaRunda=false
+
 app.get('/', (req, res) => {
-  res.render('index', {user: req.oidc.user});
+  res.render('index', {user: req.oidc.user, brojevi: null, aktivnaRunda:aktivnaRunda});
 });
 
 app.post('/input', async (req, res) => {
   const { iskaznica, brojevi } = req.body;
-  //let lotoBrojevi = brojevi.split(",").map(broj => Number(broj.trim()))
   const id = await unosPodataka(iskaznica, brojevi)
   const url =`${config.baseURL}/${id}`;
   const qrCodeImage = await QRCode.toDataURL(url);
   res.send(`<img src="${qrCodeImage}">`);
 });
 
-if (externalUrl) { //externalUrl
+app.get('/new-round', (req, res) => {
+  if (!aktivnaRunda) {
+    aktivnaRunda = true;
+  }else{
+    res.status(204).send();
+  }
+});
+
+app.get('/close', (req, res) => {
+  if (aktivnaRunda) {
+    aktivnaRunda = false;
+  }else{
+    res.status(204).send();
+  }
+});
+
+app.get("/:id", async (req, res) => {
+    const id = req.params.id;
+    const brojevi = await pronadiBrojeve(id)
+    //let lotoBrojevi = brojevi.split(",").map(broj => Number(broj.trim()))
+    return res.render("index", {user: req.oidc.user, brojevi: brojevi, aktivnaRunda:aktivnaRunda});
+});
+
+if (externalUrl) {
   const hostname = '0.0.0.0';
   app.listen(port, hostname, () => {
     console.log(`Server locally running at http://${hostname}:${port}/ and from
